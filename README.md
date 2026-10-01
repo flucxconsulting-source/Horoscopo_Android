@@ -8,7 +8,8 @@ The app currently runs fully offline and teaches the first production-oriented p
 
 - Kotlin data model for zodiac signs.
 - Repository-style data source.
-- Jetpack Compose screen with selectable sign cards.
+- Jetpack Compose home screen with selectable sign cards.
+- Navigation Compose route from the zodiac list to a detail screen.
 - Reusable Compose components for list and detail UI.
 - Basic unit tests for the horoscope data.
 
@@ -22,6 +23,8 @@ app/src/main/java/com/example/horoscopo/
 ├── data/
 │   ├── HoroscopeRepository.kt
 │   └── ZodiacSign.kt
+├── navigation/
+│   └── HoroscopeDestinations.kt
 └── ui/
     ├── components/
     │   ├── HoroscopeDetailCard.kt
@@ -49,9 +52,10 @@ Before adding internet data, try this manually:
 2. Fill it in for all twelve signs in `HoroscopeRepository`.
 3. Display it in `HoroscopeDetailCard`.
 4. Add one unit test that checks Aries has the expected match.
+5. Run the app and confirm the value appears only after opening a detail screen.
 
 This practices the full path from model to data to UI to test.
 
 ## Next recommended step
 
-Add a detail screen with Navigation Compose, then replace the offline daily reading with a small repository interface. After that, an API implementation can be added without rewriting the UI.
+Create a small repository interface, then make the current offline repository implement it. After that, an API implementation can be added without rewriting the UI.

@@ -1,6 +1,7 @@
 package com.example.horoscopo
 
 import com.example.horoscopo.data.HoroscopeRepository
+import com.example.horoscopo.navigation.HoroscopeDestinations
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -20,5 +21,12 @@ class ExampleUnitTest {
 
         assertNotNull(sign)
         assertEquals("Aries", sign?.name)
+    }
+
+    @Test
+    fun detailRoute_includesSelectedSignId() {
+        val route = HoroscopeDestinations.detailRoute("aries")
+
+        assertEquals("detail/aries", route)
     }
 }
