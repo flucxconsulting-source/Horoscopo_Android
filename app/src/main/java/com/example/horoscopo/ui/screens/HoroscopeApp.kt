@@ -99,8 +99,12 @@ fun HoroscopeApp(
             val uiState = detailViewModel.uiState.collectAsStateWithLifecycle()
             HoroscopeDetailScreen(
                 uiState = uiState.value,
+                favouriteSignId = favouriteSignId,
                 onNavigateBack = { navController.popBackStack() },
                 onRetry = detailViewModel::retry,
+                onFavouriteSelected = { sign ->
+                    favouriteSignId = if (favouriteSignId == sign.id) null else sign.id
+                },
             )
         }
     }
@@ -190,8 +194,10 @@ private fun HoroscopeHomeContent(
 @Composable
 private fun HoroscopeDetailScreen(
     uiState: HoroscopeDetailUiState,
+    favouriteSignId: String?,
     onNavigateBack: () -> Unit,
     onRetry: () -> Unit,
+    onFavouriteSelected: (ZodiacSign) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val screenTitle = when (uiState) {
@@ -264,7 +270,11 @@ private fun HoroscopeDetailScreen(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        HoroscopeDetailCard(sign = uiState.sign)
+                        HoroscopeDetailCard(
+                            sign = uiState.sign,
+                            isFavourite = uiState.sign.id == favouriteSignId,
+                            onFavouriteClick = { onFavouriteSelected(uiState.sign) },
+                        )
                         Text(
                             text = "State lesson: this screen is rendering the Content state for ${uiState.sign.id}.",
                             style = MaterialTheme.typography.bodyMedium,
