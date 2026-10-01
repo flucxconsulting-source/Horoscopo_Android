@@ -7,13 +7,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -24,7 +31,9 @@ import com.example.horoscopo.data.ZodiacSign
 fun ZodiacSignCard(
     sign: ZodiacSign,
     selected: Boolean,
+    isFavourite: Boolean,
     onClick: () -> Unit,
+    onFavouriteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = if (selected) {
@@ -64,11 +73,34 @@ fun ZodiacSignCard(
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
-                Text(
-                    text = sign.symbol,
-                    fontSize = 30.sp,
-                    lineHeight = 30.sp,
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = sign.symbol,
+                        fontSize = 30.sp,
+                        lineHeight = 30.sp,
+                    )
+                    IconButton(
+                        onClick = onFavouriteClick,
+                        modifier = Modifier.size(40.dp),
+                    ) {
+                        Icon(
+                            imageVector = if (isFavourite) {
+                                Icons.Filled.Favorite
+                            } else {
+                                Icons.Outlined.FavoriteBorder
+                            },
+                            contentDescription = if (isFavourite) {
+                                "Remove ${sign.name} from favourites"
+                            } else {
+                                "Mark ${sign.name} as favourite"
+                            },
+                            tint = if (isFavourite) Color(0xFFD32F2F) else Color.White,
+                        )
+                    }
+                }
             }
             Text(
                 text = sign.element,

@@ -3,6 +3,8 @@ package com.example.horoscopo
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -47,6 +49,42 @@ class HoroscopeAppTest {
             composeRule.onAllNodesWithText("Today").fetchSemanticsNodes().isNotEmpty()
         }
         composeRule.onNodeWithText("Remote Aries reading.").assertIsDisplayed()
+    }
+
+    @Test
+    fun favouriteButton_togglesSelectedSign() {
+        composeRule.setContent {
+            HoroscopoTheme {
+                HoroscopeApp(repository = FakeHoroscopeDataSource())
+            }
+        }
+
+        composeRule.onNodeWithContentDescription("Mark Aries as favourite").performClick()
+
+        composeRule.onNodeWithContentDescription("Remove Aries from favourites").assertIsDisplayed()
+
+        composeRule.onNodeWithContentDescription("Remove Aries from favourites").performClick()
+
+        composeRule.onNodeWithContentDescription("Mark Aries as favourite").assertIsDisplayed()
+    }
+
+    @Test
+    fun favouriteButton_allowsOnlyOneFavouriteAtATime() {
+        composeRule.setContent {
+            HoroscopoTheme {
+                HoroscopeApp(repository = FakeHoroscopeDataSource())
+            }
+        }
+
+        composeRule.onNodeWithContentDescription("Mark Aries as favourite").performClick()
+        composeRule.onNodeWithContentDescription("Mark Taurus as favourite").performClick()
+
+        composeRule.onNodeWithContentDescription("Remove Taurus from favourites").assertIsDisplayed()
+        composeRule
+            .onAllNodesWithContentDescription("Remove Aries from favourites")
+            .fetchSemanticsNodes()
+            .let { nodes -> assert(nodes.isEmpty()) }
+        composeRule.onNodeWithContentDescription("Mark Aries as favourite").assertIsDisplayed()
     }
 
     private class FakeHoroscopeDataSource : HoroscopeDataSource {
