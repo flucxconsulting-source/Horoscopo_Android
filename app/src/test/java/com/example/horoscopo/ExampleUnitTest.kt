@@ -5,6 +5,7 @@ import com.example.horoscopo.data.HoroscopeRepository
 import com.example.horoscopo.navigation.HoroscopeDestinations
 import com.example.horoscopo.ui.state.HoroscopeDetailUiState
 import com.example.horoscopo.ui.state.buildHoroscopeDetailUiState
+import com.example.horoscopo.ui.viewmodel.HoroscopeDetailViewModel
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -53,5 +54,12 @@ class ExampleUnitTest {
         val uiState = buildHoroscopeDetailUiState("ophiuchus", HoroscopeRepository)
 
         assertTrue(uiState is HoroscopeDetailUiState.Error)
+    }
+
+    @Test
+    fun detailViewModel_exposesContentStateForKnownSign() {
+        val viewModel = HoroscopeDetailViewModel("aries", HoroscopeRepository)
+
+        assertTrue(viewModel.uiState is HoroscopeDetailUiState.Content)
     }
 }

@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,8 +45,8 @@ import com.example.horoscopo.navigation.HoroscopeDestinations
 import com.example.horoscopo.ui.components.HoroscopeDetailCard
 import com.example.horoscopo.ui.components.ZodiacSignCard
 import com.example.horoscopo.ui.state.HoroscopeDetailUiState
-import com.example.horoscopo.ui.state.buildHoroscopeDetailUiState
 import com.example.horoscopo.ui.theme.HoroscopoTheme
+import com.example.horoscopo.ui.viewmodel.HoroscopeDetailViewModel
 
 @Composable
 fun HoroscopeApp(
@@ -77,9 +78,15 @@ fun HoroscopeApp(
             ),
         ) { backStackEntry ->
             val signId = backStackEntry.arguments?.getString(HoroscopeDestinations.SignIdArg)
-            val uiState = buildHoroscopeDetailUiState(signId, repository)
+            val detailViewModel: HoroscopeDetailViewModel = viewModel(
+                key = "detail-$signId",
+                factory = HoroscopeDetailViewModel.Factory(
+                    signId = signId,
+                    repository = repository,
+                ),
+            )
             HoroscopeDetailScreen(
-                uiState = uiState,
+                uiState = detailViewModel.uiState,
                 onNavigateBack = { navController.popBackStack() },
             )
         }
