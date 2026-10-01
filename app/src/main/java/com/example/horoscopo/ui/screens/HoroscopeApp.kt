@@ -27,7 +27,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +61,7 @@ fun HoroscopeApp(
 ) {
     val signs = remember { repository.getSigns() }
     val navController = rememberNavController()
+    var favouriteSignId by rememberSaveable { mutableStateOf<String?>(null) }
 
     NavHost(
         navController = navController,
@@ -66,8 +71,12 @@ fun HoroscopeApp(
         composable(route = HoroscopeDestinations.Home) {
             HoroscopeHomeScreen(
                 signs = signs,
+                favouriteSignId = favouriteSignId,
                 onSignSelected = { sign ->
                     navController.navigate(HoroscopeDestinations.detailRoute(sign.id))
+                },
+                onFavouriteSelected = { sign ->
+                    favouriteSignId = if (favouriteSignId == sign.id) null else sign.id
                 },
             )
         }
@@ -101,7 +110,9 @@ fun HoroscopeApp(
 @Composable
 private fun HoroscopeHomeScreen(
     signs: List<ZodiacSign>,
+    favouriteSignId: String?,
     onSignSelected: (ZodiacSign) -> Unit,
+    onFavouriteSelected: (ZodiacSign) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -119,7 +130,9 @@ private fun HoroscopeHomeScreen(
     ) { innerPadding ->
         HoroscopeHomeContent(
             signs = signs,
+            favouriteSignId = favouriteSignId,
             onSignSelected = onSignSelected,
+            onFavouriteSelected = onFavouriteSelected,
             modifier = Modifier.padding(innerPadding),
         )
     }
@@ -128,7 +141,9 @@ private fun HoroscopeHomeScreen(
 @Composable
 private fun HoroscopeHomeContent(
     signs: List<ZodiacSign>,
+    favouriteSignId: String?,
     onSignSelected: (ZodiacSign) -> Unit,
+    onFavouriteSelected: (ZodiacSign) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -161,7 +176,9 @@ private fun HoroscopeHomeContent(
                 ZodiacSignCard(
                     sign = sign,
                     selected = false,
+                    isFavourite = sign.id == favouriteSignId,
                     onClick = { onSignSelected(sign) },
+                    onFavouriteClick = { onFavouriteSelected(sign) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
