@@ -3,6 +3,8 @@ package com.example.horoscopo
 import com.example.horoscopo.data.HoroscopeDataSource
 import com.example.horoscopo.data.HoroscopeRepository
 import com.example.horoscopo.navigation.HoroscopeDestinations
+import com.example.horoscopo.ui.state.HoroscopeDetailUiState
+import com.example.horoscopo.ui.state.buildHoroscopeDetailUiState
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -36,5 +38,20 @@ class ExampleUnitTest {
         val route = HoroscopeDestinations.detailRoute("aries")
 
         assertEquals("detail/aries", route)
+    }
+
+    @Test
+    fun detailUiState_returnsContentForKnownSign() {
+        val uiState = buildHoroscopeDetailUiState("aries", HoroscopeRepository)
+
+        assertTrue(uiState is HoroscopeDetailUiState.Content)
+        assertEquals("Aries", (uiState as HoroscopeDetailUiState.Content).sign.name)
+    }
+
+    @Test
+    fun detailUiState_returnsErrorForUnknownSign() {
+        val uiState = buildHoroscopeDetailUiState("ophiuchus", HoroscopeRepository)
+
+        assertTrue(uiState is HoroscopeDetailUiState.Error)
     }
 }
