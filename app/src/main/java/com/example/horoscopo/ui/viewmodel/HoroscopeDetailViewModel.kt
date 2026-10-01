@@ -2,16 +2,28 @@ package com.example.horoscopo.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.horoscopo.data.HoroscopeDataSource
 import com.example.horoscopo.ui.state.HoroscopeDetailUiState
 import com.example.horoscopo.ui.state.buildHoroscopeDetailUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class HoroscopeDetailViewModel(
     signId: String?,
     repository: HoroscopeDataSource,
 ) : ViewModel() {
-    val uiState: HoroscopeDetailUiState = buildHoroscopeDetailUiState(signId, repository)
+    private val _uiState = MutableStateFlow<HoroscopeDetailUiState>(HoroscopeDetailUiState.Loading)
+    val uiState: StateFlow<HoroscopeDetailUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _uiState.value = buildHoroscopeDetailUiState(signId, repository)
+        }
+    }
 
     class Factory(
         private val signId: String?,

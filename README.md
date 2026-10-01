@@ -11,7 +11,7 @@ The app currently runs fully offline and teaches the first production-oriented p
 - Jetpack Compose home screen with selectable sign cards.
 - Navigation Compose route from the zodiac list to a detail screen.
 - Detail UI state for loading, content, and error cases.
-- Detail ViewModel that owns screen state.
+- Detail ViewModel that exposes screen state with `StateFlow`.
 - Reusable Compose components for list and detail UI.
 - Basic unit tests for the horoscope data.
 
@@ -73,8 +73,8 @@ This practices the full path from model to data to UI to test.
 
 ## Why ViewModel matters
 
-`HoroscopeDetailViewModel` owns the detail screen state. The composable now receives state and renders it, while the ViewModel decides which state should exist for the selected route argument. This keeps UI code simpler as the app grows.
+`HoroscopeDetailViewModel` owns the detail screen state and exposes it as `StateFlow`. The composable collects that flow with lifecycle awareness, receives state, and renders it. This keeps UI code simpler as the app grows and prepares the detail screen for asynchronous work.
 
 ## Next recommended step
 
-Make the detail state asynchronous with Kotlin coroutines and `StateFlow`. That is the final preparation before connecting a real horoscope API.
+Add a remote data source with Retrofit or Ktor, then map the API response into the existing `HoroscopeDetailUiState` flow.

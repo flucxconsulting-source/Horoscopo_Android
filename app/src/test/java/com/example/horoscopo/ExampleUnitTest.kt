@@ -6,11 +6,16 @@ import com.example.horoscopo.navigation.HoroscopeDestinations
 import com.example.horoscopo.ui.state.HoroscopeDetailUiState
 import com.example.horoscopo.ui.state.buildHoroscopeDetailUiState
 import com.example.horoscopo.ui.viewmodel.HoroscopeDetailViewModel
+import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 import org.junit.Test
 
 import org.junit.Assert.*
 
 class ExampleUnitTest {
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     @Test
     fun repository_containsAllZodiacSigns() {
         val signs = HoroscopeRepository.getSigns()
@@ -57,9 +62,9 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun detailViewModel_exposesContentStateForKnownSign() {
+    fun detailViewModel_exposesContentStateForKnownSign() = runTest {
         val viewModel = HoroscopeDetailViewModel("aries", HoroscopeRepository)
 
-        assertTrue(viewModel.uiState is HoroscopeDetailUiState.Content)
+        assertTrue(viewModel.uiState.value is HoroscopeDetailUiState.Content)
     }
 }

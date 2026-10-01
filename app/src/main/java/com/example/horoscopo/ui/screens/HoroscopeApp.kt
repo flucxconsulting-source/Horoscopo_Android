@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -85,8 +86,9 @@ fun HoroscopeApp(
                     repository = repository,
                 ),
             )
+            val uiState = detailViewModel.uiState.collectAsStateWithLifecycle()
             HoroscopeDetailScreen(
-                uiState = detailViewModel.uiState,
+                uiState = uiState.value,
                 onNavigateBack = { navController.popBackStack() },
             )
         }
