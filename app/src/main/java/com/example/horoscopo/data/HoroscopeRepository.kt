@@ -150,5 +150,5 @@ object HoroscopeRepository : HoroscopeDataSource {
 
     override fun getSigns(): List<ZodiacSign> = signs
 
-    override fun getSign(id: String): ZodiacSign? = signs.firstOrNull { it.id == id }
+    override suspend fun getSign(id: String): ZodiacSign? = signs.firstOrNull { it.id == id }
 }

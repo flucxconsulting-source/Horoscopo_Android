@@ -12,6 +12,8 @@ The app currently runs fully offline and teaches the first production-oriented p
 - Navigation Compose route from the zodiac list to a detail screen.
 - Detail UI state for loading, content, and error cases.
 - Detail ViewModel that exposes screen state with `StateFlow`.
+- Retrofit remote data source for daily horoscope text.
+- Offline fallback if the network call fails.
 - Reusable Compose components for list and detail UI.
 - Basic unit tests for the horoscope data.
 
@@ -25,7 +27,11 @@ app/src/main/java/com/example/horoscopo/
 ├── data/
 │   ├── HoroscopeDataSource.kt
 │   ├── HoroscopeRepository.kt
-│   └── ZodiacSign.kt
+│   ├── ZodiacSign.kt
+│   └── remote/
+│       ├── DailyHoroscopeApi.kt
+│       ├── DailyHoroscopeResponse.kt
+│       └── RemoteHoroscopeRepository.kt
 ├── navigation/
 │   └── HoroscopeDestinations.kt
 └── ui/
@@ -75,6 +81,14 @@ This practices the full path from model to data to UI to test.
 
 `HoroscopeDetailViewModel` owns the detail screen state and exposes it as `StateFlow`. The composable collects that flow with lifecycle awareness, receives state, and renders it. This keeps UI code simpler as the app grows and prepares the detail screen for asynchronous work.
 
+## Remote data
+
+`RemoteHoroscopeRepository` uses Retrofit to request the daily horoscope from:
+
+`https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily`
+
+The app keeps zodiac metadata locally and replaces only the daily reading with the remote text. If the network request fails, the repository returns the offline reading so the app still works.
+
 ## Next recommended step
 
-Add a remote data source with Retrofit or Ktor, then map the API response into the existing `HoroscopeDetailUiState` flow.
+Show a visible loading state for a short moment, then add a retry action for network failures.

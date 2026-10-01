@@ -11,7 +11,7 @@ sealed interface HoroscopeDetailUiState {
     data class Error(val message: String) : HoroscopeDetailUiState
 }
 
-fun buildHoroscopeDetailUiState(
+suspend fun buildHoroscopeDetailUiState(
     signId: String?,
     repository: HoroscopeDataSource,
 ): HoroscopeDetailUiState {
