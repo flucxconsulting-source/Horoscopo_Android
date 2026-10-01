@@ -1,5 +1,6 @@
 package com.example.horoscopo
 
+import com.example.horoscopo.data.HoroscopeDataSource
 import com.example.horoscopo.data.HoroscopeRepository
 import com.example.horoscopo.navigation.HoroscopeDestinations
 import org.junit.Test
@@ -21,6 +22,13 @@ class ExampleUnitTest {
 
         assertNotNull(sign)
         assertEquals("Aries", sign?.name)
+    }
+
+    @Test
+    fun repository_canBeUsedThroughDataSourceInterface() {
+        val dataSource: HoroscopeDataSource = HoroscopeRepository
+
+        assertEquals("Leo", dataSource.getSign("leo")?.name)
     }
 
     @Test

@@ -1,6 +1,6 @@
 package com.example.horoscopo.data
 
-object HoroscopeRepository {
+object HoroscopeRepository : HoroscopeDataSource {
     private val signs = listOf(
         ZodiacSign(
             id = "aries",
@@ -148,7 +148,7 @@ object HoroscopeRepository {
         ),
     )
 
-    fun getSigns(): List<ZodiacSign> = signs
+    override fun getSigns(): List<ZodiacSign> = signs
 
-    fun getSign(id: String): ZodiacSign? = signs.firstOrNull { it.id == id }
+    override fun getSign(id: String): ZodiacSign? = signs.firstOrNull { it.id == id }
 }

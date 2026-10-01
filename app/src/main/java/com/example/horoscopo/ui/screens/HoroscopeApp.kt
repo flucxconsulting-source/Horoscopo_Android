@@ -36,6 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.horoscopo.data.HoroscopeDataSource
 import com.example.horoscopo.data.HoroscopeRepository
 import com.example.horoscopo.data.ZodiacSign
 import com.example.horoscopo.navigation.HoroscopeDestinations
@@ -45,7 +46,7 @@ import com.example.horoscopo.ui.theme.HoroscopoTheme
 
 @Composable
 fun HoroscopeApp(
-    repository: HoroscopeRepository,
+    repository: HoroscopeDataSource,
     modifier: Modifier = Modifier,
 ) {
     val signs = remember { repository.getSigns() }
