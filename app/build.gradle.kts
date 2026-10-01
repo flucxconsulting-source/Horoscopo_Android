@@ -57,9 +57,11 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.moshi)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.junit)
 }

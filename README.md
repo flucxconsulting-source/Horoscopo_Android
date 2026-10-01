@@ -15,7 +15,8 @@ The app currently runs fully offline and teaches the first production-oriented p
 - Retrofit remote data source for daily horoscope text.
 - Retry action when the daily horoscope network call fails.
 - Reusable Compose components for list and detail UI.
-- Basic unit tests for the horoscope data.
+- Unit tests for data, state, and ViewModel logic.
+- Compose UI tests for visible home and detail behavior.
 
 The reference repository at <https://github.com/IgniteCoders/Horoscopo-Android> was used only to compare the first feature goal: preparing the twelve zodiac signs with names, dates, and sign identity. This implementation uses its own Compose structure and offline content.
 
@@ -91,4 +92,4 @@ The app keeps zodiac metadata locally and replaces only the daily reading with t
 
 ## Next recommended step
 
-Add Compose UI tests for the home and detail screens so the visible behavior is covered, not only the Kotlin logic underneath it.
+Polish the first app release: run it on an emulator, take screenshots, and open a pull request from the feature branch into `main`.
