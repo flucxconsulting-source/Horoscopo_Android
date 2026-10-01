@@ -1,17 +1,24 @@
 package com.example.horoscopo
 
+import com.example.horoscopo.data.HoroscopeRepository
 import org.junit.Test
 
 import org.junit.Assert.*
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun repository_containsAllZodiacSigns() {
+        val signs = HoroscopeRepository.getSigns()
+
+        assertEquals(12, signs.size)
+        assertEquals(12, signs.map { it.id }.distinct().size)
+    }
+
+    @Test
+    fun repository_findsSignById() {
+        val sign = HoroscopeRepository.getSign("aries")
+
+        assertNotNull(sign)
+        assertEquals("Aries", sign?.name)
     }
 }
