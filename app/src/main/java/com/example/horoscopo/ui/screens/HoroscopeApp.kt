@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -90,6 +91,7 @@ fun HoroscopeApp(
             HoroscopeDetailScreen(
                 uiState = uiState.value,
                 onNavigateBack = { navController.popBackStack() },
+                onRetry = detailViewModel::retry,
             )
         }
     }
@@ -172,6 +174,7 @@ private fun HoroscopeHomeContent(
 private fun HoroscopeDetailScreen(
     uiState: HoroscopeDetailUiState,
     onNavigateBack: () -> Unit,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val screenTitle = when (uiState) {
@@ -222,11 +225,18 @@ private fun HoroscopeDetailScreen(
                 }
 
                 is HoroscopeDetailUiState.Error -> {
-                    Text(
-                        text = uiState.message,
+                    Column(
                         modifier = Modifier.padding(24.dp),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Text(
+                            text = uiState.message,
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        Button(onClick = onRetry) {
+                            Text(text = "Retry")
+                        }
+                    }
                 }
 
                 is HoroscopeDetailUiState.Content -> {

@@ -17,16 +17,12 @@ class RemoteHoroscopeRepository(
     override suspend fun getSign(id: String): ZodiacSign? {
         val localSign = fallback.getSign(id) ?: return null
 
-        return runCatching {
-            val response = api.getDailyHoroscope(sign = localSign.name)
-            val remoteReading = response.data?.horoscope?.takeIf { it.isNotBlank() }
-            if (remoteReading == null) {
-                localSign
-            } else {
-                localSign.copy(dailyReading = remoteReading)
-            }
-        }.getOrElse {
+        val response = api.getDailyHoroscope(sign = localSign.name)
+        val remoteReading = response.data?.horoscope?.takeIf { it.isNotBlank() }
+        return if (remoteReading == null) {
             localSign
+        } else {
+            localSign.copy(dailyReading = remoteReading)
         }
     }
 

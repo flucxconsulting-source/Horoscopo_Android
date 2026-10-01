@@ -13,13 +13,22 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class HoroscopeDetailViewModel(
-    signId: String?,
-    repository: HoroscopeDataSource,
+    private val signId: String?,
+    private val repository: HoroscopeDataSource,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<HoroscopeDetailUiState>(HoroscopeDetailUiState.Loading)
     val uiState: StateFlow<HoroscopeDetailUiState> = _uiState.asStateFlow()
 
     init {
+        loadHoroscope()
+    }
+
+    fun retry() {
+        loadHoroscope()
+    }
+
+    private fun loadHoroscope() {
+        _uiState.value = HoroscopeDetailUiState.Loading
         viewModelScope.launch {
             _uiState.value = buildHoroscopeDetailUiState(signId, repository)
         }

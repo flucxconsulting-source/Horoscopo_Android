@@ -86,26 +86,65 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun remoteRepository_usesFallbackWhenApiFails() = runTest {
+    fun remoteRepository_throwsWhenApiFails() = runTest {
         val repository = RemoteHoroscopeRepository(
             api = FakeDailyHoroscopeApi(
                 throwable = IllegalStateException("Network failed"),
             ),
         )
 
-        val sign = repository.getSign("aries")
+        assertThrows(IllegalStateException::class.java) {
+            runTest {
+                repository.getSign("aries")
+            }
+        }
+    }
 
-        assertEquals(HoroscopeRepository.getSign("aries")?.dailyReading, sign?.dailyReading)
+    @Test
+    fun detailViewModel_canRetryAfterNetworkFailure() = runTest {
+        val repository = RemoteHoroscopeRepository(
+            api = FakeDailyHoroscopeApi(
+                horoscopes = mutableListOf(null, "Recovered horoscope text."),
+                throwable = IllegalStateException("Network failed"),
+            ),
+        )
+        val viewModel = HoroscopeDetailViewModel("aries", repository)
+
+        assertTrue(viewModel.uiState.value is HoroscopeDetailUiState.Error)
+
+        viewModel.retry()
+
+        val uiState = viewModel.uiState.value
+        assertTrue(uiState is HoroscopeDetailUiState.Content)
+        assertEquals(
+            "Recovered horoscope text.",
+            (uiState as HoroscopeDetailUiState.Content).sign.dailyReading,
+        )
     }
 
     private class FakeDailyHoroscopeApi(
         private val horoscope: String? = null,
+        private val horoscopes: MutableList<String?> = mutableListOf(),
         private val throwable: Throwable? = null,
     ) : DailyHoroscopeApi {
         override suspend fun getDailyHoroscope(
             sign: String,
             day: String,
         ): DailyHoroscopeResponse {
+            if (horoscopes.isNotEmpty()) {
+                val nextHoroscope = horoscopes.removeAt(0)
+                if (nextHoroscope == null) {
+                    throwable?.let { throw it }
+                }
+                return DailyHoroscopeResponse(
+                    data = DailyHoroscopeDto(
+                        date = "2026-10-01",
+                        period = "daily",
+                        sign = sign,
+                        horoscope = nextHoroscope,
+                    ),
+                )
+            }
             throwable?.let { throw it }
             return DailyHoroscopeResponse(
                 data = DailyHoroscopeDto(

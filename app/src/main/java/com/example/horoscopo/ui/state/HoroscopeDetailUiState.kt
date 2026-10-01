@@ -19,10 +19,14 @@ suspend fun buildHoroscopeDetailUiState(
         return HoroscopeDetailUiState.Error("Missing zodiac sign.")
     }
 
-    val sign = repository.getSign(signId)
-    return if (sign == null) {
-        HoroscopeDetailUiState.Error("This zodiac sign is not available.")
-    } else {
-        HoroscopeDetailUiState.Content(sign)
+    return runCatching {
+        val sign = repository.getSign(signId)
+        if (sign == null) {
+            HoroscopeDetailUiState.Error("This zodiac sign is not available.")
+        } else {
+            HoroscopeDetailUiState.Content(sign)
+        }
+    }.getOrElse {
+        HoroscopeDetailUiState.Error("Could not load today's horoscope. Check your connection and try again.")
     }
 }

@@ -13,7 +13,7 @@ The app currently runs fully offline and teaches the first production-oriented p
 - Detail UI state for loading, content, and error cases.
 - Detail ViewModel that exposes screen state with `StateFlow`.
 - Retrofit remote data source for daily horoscope text.
-- Offline fallback if the network call fails.
+- Retry action when the daily horoscope network call fails.
 - Reusable Compose components for list and detail UI.
 - Basic unit tests for the horoscope data.
 
@@ -87,8 +87,8 @@ This practices the full path from model to data to UI to test.
 
 `https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily`
 
-The app keeps zodiac metadata locally and replaces only the daily reading with the remote text. If the network request fails, the repository returns the offline reading so the app still works.
+The app keeps zodiac metadata locally and replaces only the daily reading with the remote text. If the network request fails, the detail screen shows an error state with a retry action.
 
 ## Next recommended step
 
-Show a visible loading state for a short moment, then add a retry action for network failures.
+Split tests into focused files by layer: repository tests, state tests, and ViewModel tests. That will keep the project easier to maintain as features grow.
