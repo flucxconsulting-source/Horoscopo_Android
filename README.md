@@ -91,4 +91,4 @@ The app keeps zodiac metadata locally and replaces only the daily reading with t
 
 ## Next recommended step
 
-Split tests into focused files by layer: repository tests, state tests, and ViewModel tests. That will keep the project easier to maintain as features grow.
+Add Compose UI tests for the home and detail screens so the visible behavior is covered, not only the Kotlin logic underneath it.
