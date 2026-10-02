@@ -3,10 +3,12 @@ package com.example.horoscopo.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -73,15 +75,11 @@ fun HoroscopeApp(
             HoroscopeHomeScreen(
                 signs = signs,
                 favouriteSignId = favouriteSignId,
-                selectedPeriods = selectedPeriods,
                 onSignSelected = { sign ->
                     navController.navigate(HoroscopeDestinations.detailRoute(sign.id))
                 },
                 onFavouriteSelected = { sign ->
                     favouriteSignId = if (favouriteSignId == sign.id) null else sign.id
-                },
-                onPeriodSelected = { sign, period ->
-                    selectedPeriods = selectedPeriods + (sign.id to period)
                 },
             )
         }
@@ -124,10 +122,8 @@ fun HoroscopeApp(
 private fun HoroscopeHomeScreen(
     signs: List<ZodiacSign>,
     favouriteSignId: String?,
-    selectedPeriods: Map<String, HoroscopePeriod>,
     onSignSelected: (ZodiacSign) -> Unit,
     onFavouriteSelected: (ZodiacSign) -> Unit,
-    onPeriodSelected: (ZodiacSign, HoroscopePeriod) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -146,10 +142,8 @@ private fun HoroscopeHomeScreen(
         HoroscopeHomeContent(
             signs = signs,
             favouriteSignId = favouriteSignId,
-            selectedPeriods = selectedPeriods,
             onSignSelected = onSignSelected,
             onFavouriteSelected = onFavouriteSelected,
-            onPeriodSelected = onPeriodSelected,
             modifier = Modifier.padding(innerPadding),
         )
     }
@@ -159,10 +153,8 @@ private fun HoroscopeHomeScreen(
 private fun HoroscopeHomeContent(
     signs: List<ZodiacSign>,
     favouriteSignId: String?,
-    selectedPeriods: Map<String, HoroscopePeriod>,
     onSignSelected: (ZodiacSign) -> Unit,
     onFavouriteSelected: (ZodiacSign) -> Unit,
-    onPeriodSelected: (ZodiacSign, HoroscopePeriod) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -178,27 +170,35 @@ private fun HoroscopeHomeContent(
                 ),
             ),
     ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(
-                items = signs,
-                key = { it.id },
-            ) { sign ->
-                ZodiacSignCard(
-                    sign = sign,
-                    selected = false,
-                    isFavourite = sign.id == favouriteSignId,
-                    selectedPeriod = selectedPeriods[sign.id] ?: HoroscopePeriod.Day,
-                    onClick = { onSignSelected(sign) },
-                    onFavouriteClick = { onFavouriteSelected(sign) },
-                    onPeriodSelected = { period -> onPeriodSelected(sign, period) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val gridPadding = 8.dp
+            val gridSpacing = 8.dp
+            val rows = 6
+            val cardHeight = (maxHeight - (gridPadding * 2) - (gridSpacing * (rows - 1))) / rows
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(gridPadding),
+                horizontalArrangement = Arrangement.spacedBy(gridSpacing),
+                verticalArrangement = Arrangement.spacedBy(gridSpacing),
+                userScrollEnabled = false,
+            ) {
+                items(
+                    items = signs,
+                    key = { it.id },
+                ) { sign ->
+                    ZodiacSignCard(
+                        sign = sign,
+                        selected = false,
+                        isFavourite = sign.id == favouriteSignId,
+                        onClick = { onSignSelected(sign) },
+                        onFavouriteClick = { onFavouriteSelected(sign) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(cardHeight),
+                    )
+                }
             }
         }
     }

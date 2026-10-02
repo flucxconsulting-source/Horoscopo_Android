@@ -33,6 +33,10 @@ class HoroscopeAppTest {
         composeRule.onNodeWithText("Aries").assertIsDisplayed()
         composeRule.onNodeWithText("Taurus").assertIsDisplayed()
         composeRule.onNodeWithText("Pisces").assertIsDisplayed()
+        composeRule
+            .onAllNodesWithContentDescription("Show Week horoscope for Aries")
+            .fetchSemanticsNodes()
+            .let { nodes -> assert(nodes.isEmpty()) }
     }
 
     @Test
@@ -109,11 +113,16 @@ class HoroscopeAppTest {
     }
 
     @Test
-    fun homeCard_periodToggleChangesVisibleReading() {
+    fun detailCard_periodToggleChangesVisibleReading() {
         composeRule.setContent {
             HoroscopoTheme {
                 HoroscopeApp(repository = FakeHoroscopeDataSource())
             }
+        }
+
+        composeRule.onNodeWithText("Aries").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.onAllNodesWithText("Today").fetchSemanticsNodes().isNotEmpty()
         }
 
         composeRule.onNodeWithContentDescription("Show Week horoscope for Aries").performClick()
