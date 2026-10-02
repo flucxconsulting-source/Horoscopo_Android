@@ -132,6 +132,19 @@ class HoroscopeAppTest {
     }
 
     @Test
+    fun homeViewModeToggle_switchesBetweenGridAndList() {
+        composeRule.setContent {
+            HoroscopoTheme {
+                HoroscopeApp(repository = FakeHoroscopeDataSource())
+            }
+        }
+
+        composeRule.onNodeWithContentDescription("List view").performClick()
+
+        composeRule.onNodeWithContentDescription("Grid view").assertIsDisplayed()
+    }
+
+    @Test
     fun detailFavouriteButton_togglesAndSyncsWithHomeCard() {
         composeRule.setContent {
             HoroscopoTheme {

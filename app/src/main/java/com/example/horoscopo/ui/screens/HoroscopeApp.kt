@@ -12,12 +12,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.items as gridItems
+import androidx.compose.foundation.lazy.items as lazyItems
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -67,6 +71,11 @@ import com.example.horoscopo.ui.text.localizedElementName
 import com.example.horoscopo.ui.text.localizedPlanetName
 import com.example.horoscopo.ui.theme.HoroscopoTheme
 import com.example.horoscopo.ui.viewmodel.HoroscopeDetailViewModel
+
+private enum class HomeViewMode {
+    Grid,
+    List,
+}
 
 @Composable
 fun HoroscopeApp(
@@ -145,6 +154,7 @@ private fun HoroscopeHomeScreen(
     var selectedElement by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedColor by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedSignId by rememberSaveable { mutableStateOf<String?>(null) }
+    var viewMode by rememberSaveable { mutableStateOf(HomeViewMode.Grid) }
 
     val filteredSigns = remember(
         signs,
@@ -185,6 +195,29 @@ private fun HoroscopeHomeScreen(
                         fontWeight = FontWeight.SemiBold,
                     )
                 },
+                navigationIcon = {
+                    val switchToList = viewMode == HomeViewMode.Grid
+                    IconButton(
+                        onClick = {
+                            viewMode = if (switchToList) HomeViewMode.List else HomeViewMode.Grid
+                        },
+                    ) {
+                        Icon(
+                            imageVector = if (switchToList) {
+                                Icons.AutoMirrored.Filled.ViewList
+                            } else {
+                                Icons.Filled.GridView
+                            },
+                            contentDescription = stringResource(
+                                if (switchToList) {
+                                    R.string.action_list_view
+                                } else {
+                                    R.string.action_grid_view
+                                },
+                            ),
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = { showFilters = true }) {
                         Icon(
@@ -199,6 +232,7 @@ private fun HoroscopeHomeScreen(
         HoroscopeHomeContent(
             signs = filteredSigns,
             favouriteSignId = favouriteSignId,
+            viewMode = viewMode,
             onSignSelected = onSignSelected,
             onFavouriteSelected = onFavouriteSelected,
             modifier = Modifier.padding(innerPadding),
@@ -237,6 +271,7 @@ private fun HoroscopeHomeScreen(
 private fun HoroscopeHomeContent(
     signs: List<ZodiacSign>,
     favouriteSignId: String?,
+    viewMode: HomeViewMode,
     onSignSelected: (ZodiacSign) -> Unit,
     onFavouriteSelected: (ZodiacSign) -> Unit,
     modifier: Modifier = Modifier,
@@ -272,7 +307,7 @@ private fun HoroscopeHomeContent(
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
-            } else {
+            } else if (viewMode == HomeViewMode.Grid) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxSize(),
@@ -281,7 +316,7 @@ private fun HoroscopeHomeContent(
                     verticalArrangement = Arrangement.spacedBy(gridSpacing),
                     userScrollEnabled = false,
                 ) {
-                    items(
+                    gridItems(
                         items = signs,
                         key = { it.id },
                     ) { sign ->
@@ -294,6 +329,28 @@ private fun HoroscopeHomeContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(cardHeight),
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(gridPadding),
+                    verticalArrangement = Arrangement.spacedBy(gridSpacing),
+                ) {
+                    lazyItems(
+                        items = signs,
+                        key = { it.id },
+                    ) { sign ->
+                        ZodiacSignCard(
+                            sign = sign,
+                            selected = false,
+                            isFavourite = sign.id == favouriteSignId,
+                            onClick = { onSignSelected(sign) },
+                            onFavouriteClick = { onFavouriteSelected(sign) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(96.dp),
                         )
                     }
                 }

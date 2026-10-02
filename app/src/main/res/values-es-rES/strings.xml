@@ -2,6 +2,8 @@
     <string name="app_name">Horóscopo</string>
     <string name="screen_title_horoscope">Horóscopo</string>
     <string name="action_open_filters">Abrir filtros del horóscopo</string>
+    <string name="action_grid_view">Vista de cuadrícula</string>
+    <string name="action_list_view">Vista de lista</string>
     <string name="action_go_back">Volver</string>
     <string name="action_retry">Reintentar</string>
     <string name="action_done">Listo</string>
