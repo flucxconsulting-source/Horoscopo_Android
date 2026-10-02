@@ -168,7 +168,7 @@ class HoroscopeAppTest {
         composeRule.onNodeWithContentDescription("Show Week horoscope for Aries").performClick()
 
         composeRule
-            .onNodeWithText("This week favors your Fire nature", substring = true)
+            .onNodeWithText("This week favors your fire nature", substring = true)
             .assertIsDisplayed()
 
         composeRule.onNodeWithContentDescription("Show Month horoscope for Aries").performClick()

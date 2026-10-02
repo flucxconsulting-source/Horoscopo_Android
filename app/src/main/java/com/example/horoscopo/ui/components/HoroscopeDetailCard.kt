@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -33,9 +34,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.horoscopo.R
 import com.example.horoscopo.data.HoroscopePeriod
 import com.example.horoscopo.data.ZodiacSign
-import com.example.horoscopo.data.readingFor
+import com.example.horoscopo.ui.text.localizedColorName
+import com.example.horoscopo.ui.text.localizedElementName
+import com.example.horoscopo.ui.text.localizedPeriodLabel
+import com.example.horoscopo.ui.text.localizedPeriodTitle
+import com.example.horoscopo.ui.text.localizedPlanetName
+import com.example.horoscopo.ui.text.localizedReadingFor
 
 @Composable
 fun HoroscopeDetailCard(
@@ -97,11 +104,15 @@ fun HoroscopeDetailCard(
                             Icons.Outlined.FavoriteBorder
                         },
                         contentDescription = if (isFavourite) {
-                            "Remove ${sign.name} from favourites"
+                            stringResource(R.string.favourite_remove, sign.name)
                         } else {
-                            "Mark ${sign.name} as favourite"
+                            stringResource(R.string.favourite_mark, sign.name)
                         },
-                        tint = if (isFavourite) Color(0xFFD32F2F) else Color.White,
+                        tint = if (isFavourite) {
+                            Color(0xFFD32F2F)
+                        } else {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        },
                     )
                 }
             }
@@ -118,12 +129,12 @@ fun HoroscopeDetailCard(
                     signName = sign.name,
                 )
                 Text(
-                    text = selectedPeriod.title,
+                    text = localizedPeriodTitle(selectedPeriod),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = sign.readingFor(selectedPeriod),
+                    text = localizedReadingFor(sign, selectedPeriod),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -135,18 +146,18 @@ fun HoroscopeDetailCard(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 DetailInfoBox(
-                    label = "Element",
-                    value = sign.element,
+                    label = stringResource(R.string.filter_element),
+                    value = localizedElementName(sign.element),
                     modifier = Modifier.weight(1f),
                 )
                 DetailInfoBox(
-                    label = "Planet",
-                    value = sign.rulingPlanet,
+                    label = stringResource(R.string.filter_planet),
+                    value = localizedPlanetName(sign.rulingPlanet),
                     modifier = Modifier.weight(1f),
                 )
                 DetailInfoBox(
-                    label = "Color",
-                    value = sign.luckyColor,
+                    label = stringResource(R.string.filter_color),
+                    value = localizedColorName(sign.luckyColor),
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -200,6 +211,13 @@ private fun PeriodToggle(
     ) {
         HoroscopePeriod.entries.forEach { period ->
             val selected = period == selectedPeriod
+            val periodLabel = localizedPeriodLabel(period)
+            val periodDescription = stringResource(R.string.period_show, periodLabel, signName)
+            val periodClickLabel = stringResource(
+                R.string.period_show,
+                periodLabel.lowercase(),
+                signName,
+            )
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -215,18 +233,18 @@ private fun PeriodToggle(
                     )
                     .clickable(
                         role = Role.Button,
-                        onClickLabel = "Show ${period.label.lowercase()} horoscope for $signName",
+                        onClickLabel = periodClickLabel,
                     ) {
                         onPeriodSelected(period)
                     }
                     .semantics {
-                        contentDescription = "Show ${period.label} horoscope for $signName"
+                        contentDescription = periodDescription
                     }
                     .padding(vertical = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = period.label,
+                    text = periodLabel,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
                     color = if (selected) {

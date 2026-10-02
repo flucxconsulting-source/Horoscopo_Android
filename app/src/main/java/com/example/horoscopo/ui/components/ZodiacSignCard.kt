@@ -25,12 +25,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.horoscopo.R
 import com.example.horoscopo.data.ZodiacSign
+import com.example.horoscopo.ui.text.localizedElementName
 
 @Composable
 fun ZodiacSignCard(
@@ -103,11 +106,15 @@ fun ZodiacSignCard(
                             Icons.Outlined.FavoriteBorder
                         },
                         contentDescription = if (isFavourite) {
-                            "Remove ${sign.name} from favourites"
+                            stringResource(R.string.favourite_remove, sign.name)
                         } else {
-                            "Mark ${sign.name} as favourite"
+                            stringResource(R.string.favourite_mark, sign.name)
                         },
-                        tint = if (isFavourite) Color(0xFFD32F2F) else Color.White,
+                        tint = if (isFavourite) {
+                            Color(0xFFD32F2F)
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                     )
                 }
             }
@@ -133,7 +140,7 @@ private fun ElementLabel(
             modifier = Modifier.size(14.dp),
         )
         Text(
-            text = element,
+            text = localizedElementName(element),
             style = MaterialTheme.typography.labelLarge,
             color = color,
             maxLines = 1,
@@ -146,7 +153,7 @@ private fun elementColor(element: String): Color = when (element) {
     "Earth" -> Color(0xFF6D8B3D)
     "Air" -> Color(0xFF42A5F5)
     "Water" -> Color(0xFF26A69A)
-    else -> Color.White
+    else -> Color.Unspecified
 }
 
 private fun elementIcon(element: String): ImageVector = when (element) {

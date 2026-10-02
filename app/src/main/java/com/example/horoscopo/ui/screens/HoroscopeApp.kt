@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,6 +53,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.horoscopo.R
 import com.example.horoscopo.data.HoroscopeDataSource
 import com.example.horoscopo.data.HoroscopePeriod
 import com.example.horoscopo.data.HoroscopeRepository
@@ -60,6 +62,9 @@ import com.example.horoscopo.navigation.HoroscopeDestinations
 import com.example.horoscopo.ui.components.HoroscopeDetailCard
 import com.example.horoscopo.ui.components.ZodiacSignCard
 import com.example.horoscopo.ui.state.HoroscopeDetailUiState
+import com.example.horoscopo.ui.text.localizedColorName
+import com.example.horoscopo.ui.text.localizedElementName
+import com.example.horoscopo.ui.text.localizedPlanetName
 import com.example.horoscopo.ui.theme.HoroscopoTheme
 import com.example.horoscopo.ui.viewmodel.HoroscopeDetailViewModel
 
@@ -176,7 +181,7 @@ private fun HoroscopeHomeScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Horoscope",
+                        text = stringResource(R.string.screen_title_horoscope),
                         fontWeight = FontWeight.SemiBold,
                     )
                 },
@@ -184,7 +189,7 @@ private fun HoroscopeHomeScreen(
                     IconButton(onClick = { showFilters = true }) {
                         Icon(
                             imageVector = Icons.Filled.FilterList,
-                            contentDescription = "Open horoscope filters",
+                            contentDescription = stringResource(R.string.action_open_filters),
                         )
                     }
                 },
@@ -263,7 +268,7 @@ private fun HoroscopeHomeContent(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "No signs match these filters.",
+                        text = stringResource(R.string.empty_filtered_signs),
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
@@ -318,7 +323,7 @@ private fun HoroscopeFilterDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = "Filters")
+            Text(text = stringResource(R.string.filters_title))
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -332,7 +337,7 @@ private fun HoroscopeFilterDialog(
                         onClick = { onFavouriteOnlyChange(!favouriteOnly) },
                         label = {
                             Text(
-                                text = "Favourite",
+                                text = stringResource(R.string.filter_favourite),
                                 style = MaterialTheme.typography.labelSmall,
                             )
                         },
@@ -344,13 +349,13 @@ private fun HoroscopeFilterDialog(
                         modifier = Modifier.weight(1f),
                         label = {
                             Text(
-                                text = "DoB",
+                                text = stringResource(R.string.filter_dob),
                                 style = MaterialTheme.typography.labelSmall,
                             )
                         },
                         placeholder = {
                             Text(
-                                text = "MM-DD",
+                                text = stringResource(R.string.filter_dob_placeholder),
                                 style = MaterialTheme.typography.labelSmall,
                             )
                         },
@@ -360,13 +365,14 @@ private fun HoroscopeFilterDialog(
                 }
 
                 FilterSelect(
-                    title = "Element",
+                    title = stringResource(R.string.filter_element),
                     options = signs.map { it.element }.distinct(),
                     selectedOption = selectedElement,
                     onOptionSelected = onElementSelected,
+                    optionLabel = { localizedElementName(it) },
                 )
                 FilterSelect(
-                    title = "Sign",
+                    title = stringResource(R.string.filter_sign),
                     options = signs.map { it.name },
                     selectedOption = signs.firstOrNull { it.id == selectedSignId }?.name,
                     onOptionSelected = { selectedName ->
@@ -374,27 +380,29 @@ private fun HoroscopeFilterDialog(
                     },
                 )
                 FilterSelect(
-                    title = "Planet",
+                    title = stringResource(R.string.filter_planet),
                     options = signs.map { it.rulingPlanet }.distinct(),
                     selectedOption = selectedPlanet,
                     onOptionSelected = onPlanetSelected,
+                    optionLabel = { localizedPlanetName(it) },
                 )
                 FilterSelect(
-                    title = "Colour",
+                    title = stringResource(R.string.filter_color),
                     options = signs.map { it.luckyColor }.distinct(),
                     selectedOption = selectedColor,
                     onOptionSelected = onColorSelected,
+                    optionLabel = { localizedColorName(it) },
                 )
             }
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = "Done")
+                Text(text = stringResource(R.string.action_done))
             }
         },
         dismissButton = {
             TextButton(onClick = onClear) {
-                Text(text = "Clear")
+                Text(text = stringResource(R.string.action_clear))
             }
         },
     )
@@ -469,8 +477,10 @@ private fun FilterSelect(
     selectedOption: String?,
     onOptionSelected: (String?) -> Unit,
     modifier: Modifier = Modifier,
+    optionLabel: @Composable (String) -> String = { it },
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val selectedOptionLabel = selectedOption?.let { optionLabel(it) } ?: stringResource(R.string.filter_all)
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -480,7 +490,7 @@ private fun FilterSelect(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text = "$title: ${selectedOption ?: "All"}",
+                text = stringResource(R.string.filter_select_format, title, selectedOptionLabel),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.SemiBold,
@@ -493,7 +503,7 @@ private fun FilterSelect(
             DropdownMenuItem(
                 text = {
                     Text(
-                        text = "All",
+                        text = stringResource(R.string.filter_all),
                         style = MaterialTheme.typography.bodySmall,
                     )
                 },
@@ -506,7 +516,7 @@ private fun FilterSelect(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = option,
+                            text = optionLabel(option),
                             style = MaterialTheme.typography.bodySmall,
                         )
                     },
@@ -534,8 +544,8 @@ private fun HoroscopeDetailScreen(
 ) {
     val screenTitle = when (uiState) {
         is HoroscopeDetailUiState.Content -> uiState.sign.name
-        is HoroscopeDetailUiState.Error -> "Sign not found"
-        HoroscopeDetailUiState.Loading -> "Loading"
+        is HoroscopeDetailUiState.Error -> stringResource(R.string.detail_sign_not_found)
+        HoroscopeDetailUiState.Loading -> stringResource(R.string.detail_loading)
     }
 
     Scaffold(
@@ -552,7 +562,7 @@ private fun HoroscopeDetailScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Go back",
+                            contentDescription = stringResource(R.string.action_go_back),
                         )
                     }
                 },
@@ -589,7 +599,7 @@ private fun HoroscopeDetailScreen(
                             style = MaterialTheme.typography.bodyLarge,
                         )
                         Button(onClick = onRetry) {
-                            Text(text = "Retry")
+                            Text(text = stringResource(R.string.action_retry))
                         }
                     }
                 }
@@ -610,7 +620,7 @@ private fun HoroscopeDetailScreen(
                             modifier = Modifier.weight(1f),
                         )
                         Text(
-                            text = "State lesson: this screen is rendering the Content state for ${uiState.sign.id}.",
+                            text = stringResource(R.string.detail_state_lesson, uiState.sign.id),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.72f),
                         )
