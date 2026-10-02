@@ -112,6 +112,25 @@ class HoroscopeAppTest {
     }
 
     @Test
+    fun homeFilter_showsElementOptions() {
+        composeRule.setContent {
+            HoroscopoTheme {
+                HoroscopeApp(repository = FakeHoroscopeDataSource())
+            }
+        }
+
+        composeRule.onNodeWithContentDescription("Open horoscope filters").performClick()
+
+        composeRule.onNodeWithText("Element").assertIsDisplayed()
+        listOf("Fire", "Earth", "Air", "Water").forEach { element ->
+            composeRule
+                .onAllNodesWithText(element)
+                .fetchSemanticsNodes()
+                .let { nodes -> assert(nodes.isNotEmpty()) }
+        }
+    }
+
+    @Test
     fun detailFavouriteButton_togglesAndSyncsWithHomeCard() {
         composeRule.setContent {
             HoroscopoTheme {

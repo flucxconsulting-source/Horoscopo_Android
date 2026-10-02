@@ -252,7 +252,7 @@ private fun HoroscopeHomeContent(
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val gridPadding = 8.dp
             val gridSpacing = 8.dp
-            val rows = ((signs.size + 1) / 2).coerceIn(1, 6)
+            val rows = 6
             val cardHeight = (maxHeight - (gridPadding * 2) - (gridSpacing * (rows - 1))) / rows
 
             if (signs.isEmpty()) {
@@ -341,6 +341,12 @@ private fun HoroscopeFilterDialog(
                 )
 
                 FilterSection(
+                    title = "Element",
+                    options = signs.map { it.element }.distinct(),
+                    selectedOption = selectedElement,
+                    onOptionSelected = onElementSelected,
+                )
+                FilterSection(
                     title = "Sign",
                     options = signs.map { it.name },
                     selectedOption = signs.firstOrNull { it.id == selectedSignId }?.name,
@@ -353,12 +359,6 @@ private fun HoroscopeFilterDialog(
                     options = signs.map { it.rulingPlanet }.distinct(),
                     selectedOption = selectedPlanet,
                     onOptionSelected = onPlanetSelected,
-                )
-                FilterSection(
-                    title = "Element",
-                    options = signs.map { it.element }.distinct(),
-                    selectedOption = selectedElement,
-                    onOptionSelected = onElementSelected,
                 )
                 FilterSection(
                     title = "Colour",
