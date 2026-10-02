@@ -121,7 +121,8 @@ class HoroscopeAppTest {
 
         composeRule.onNodeWithContentDescription("Open horoscope filters").performClick()
 
-        composeRule.onNodeWithText("Element").assertIsDisplayed()
+        composeRule.onNodeWithText("Element: All").assertIsDisplayed()
+        composeRule.onNodeWithText("Element: All").performClick()
         listOf("Fire", "Earth", "Air", "Water").forEach { element ->
             composeRule
                 .onAllNodesWithText(element)

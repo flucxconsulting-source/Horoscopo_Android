@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FilterList
@@ -24,6 +22,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -321,32 +321,51 @@ private fun HoroscopeFilterDialog(
             Text(text = "Filters")
         },
         text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-            ) {
-                FilterChip(
-                    selected = favouriteOnly,
-                    onClick = { onFavouriteOnlyChange(!favouriteOnly) },
-                    label = { Text(text = "Favourite") },
-                )
-
-                OutlinedTextField(
-                    value = birthDate,
-                    onValueChange = onBirthDateChange,
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(text = "Date of birth") },
-                    placeholder = { Text(text = "MM-DD") },
-                    singleLine = true,
-                )
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FilterChip(
+                        selected = favouriteOnly,
+                        onClick = { onFavouriteOnlyChange(!favouriteOnly) },
+                        label = {
+                            Text(
+                                text = "Favourite",
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        },
+                    )
 
-                FilterSection(
+                    OutlinedTextField(
+                        value = birthDate,
+                        onValueChange = onBirthDateChange,
+                        modifier = Modifier.weight(1f),
+                        label = {
+                            Text(
+                                text = "DoB",
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        },
+                        placeholder = {
+                            Text(
+                                text = "MM-DD",
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        },
+                        singleLine = true,
+                        textStyle = MaterialTheme.typography.bodySmall,
+                    )
+                }
+
+                FilterSelect(
                     title = "Element",
                     options = signs.map { it.element }.distinct(),
                     selectedOption = selectedElement,
                     onOptionSelected = onElementSelected,
                 )
-                FilterSection(
+                FilterSelect(
                     title = "Sign",
                     options = signs.map { it.name },
                     selectedOption = signs.firstOrNull { it.id == selectedSignId }?.name,
@@ -354,13 +373,13 @@ private fun HoroscopeFilterDialog(
                         onSignSelected(signs.firstOrNull { it.name == selectedName }?.id)
                     },
                 )
-                FilterSection(
+                FilterSelect(
                     title = "Planet",
                     options = signs.map { it.rulingPlanet }.distinct(),
                     selectedOption = selectedPlanet,
                     onOptionSelected = onPlanetSelected,
                 )
-                FilterSection(
+                FilterSelect(
                     title = "Colour",
                     options = signs.map { it.luckyColor }.distinct(),
                     selectedOption = selectedColor,
@@ -444,38 +463,57 @@ private fun monthNumber(month: String): Int = when (month) {
 }
 
 @Composable
-private fun FilterSection(
+private fun FilterSelect(
     title: String,
     options: List<String>,
     selectedOption: String?,
     onOptionSelected: (String?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.SemiBold,
-        )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+        TextButton(
+            onClick = { expanded = true },
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            FilterChip(
-                selected = selectedOption == null,
-                onClick = { onOptionSelected(null) },
-                label = { Text(text = "All") },
+            Text(
+                text = "$title: ${selectedOption ?: "All"}",
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = "All",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                },
+                onClick = {
+                    onOptionSelected(null)
+                    expanded = false
+                },
             )
             options.forEach { option ->
-                FilterChip(
-                    selected = selectedOption == option,
-                    onClick = {
-                        onOptionSelected(if (selectedOption == option) null else option)
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = option,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
                     },
-                    label = { Text(text = option) },
+                    onClick = {
+                        onOptionSelected(option)
+                        expanded = false
+                    },
                 )
             }
         }
