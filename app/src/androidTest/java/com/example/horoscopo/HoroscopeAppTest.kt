@@ -87,6 +87,27 @@ class HoroscopeAppTest {
         composeRule.onNodeWithContentDescription("Mark Aries as favourite").assertIsDisplayed()
     }
 
+    @Test
+    fun detailFavouriteButton_togglesAndSyncsWithHomeCard() {
+        composeRule.setContent {
+            HoroscopoTheme {
+                HoroscopeApp(repository = FakeHoroscopeDataSource())
+            }
+        }
+
+        composeRule.onNodeWithText("Aries").performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.onAllNodesWithText("Today").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeRule.onNodeWithContentDescription("Mark Aries as favourite").performClick()
+        composeRule.onNodeWithContentDescription("Remove Aries from favourites").assertIsDisplayed()
+
+        composeRule.onNodeWithContentDescription("Go back").performClick()
+
+        composeRule.onNodeWithContentDescription("Remove Aries from favourites").assertIsDisplayed()
+    }
+
     private class FakeHoroscopeDataSource : HoroscopeDataSource {
         private val signs = HoroscopeRepository.getSigns()
 
