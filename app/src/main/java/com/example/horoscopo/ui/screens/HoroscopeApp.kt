@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
@@ -45,6 +44,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.horoscopo.data.HoroscopeDataSource
+import com.example.horoscopo.data.HoroscopePeriod
 import com.example.horoscopo.data.HoroscopeRepository
 import com.example.horoscopo.data.ZodiacSign
 import com.example.horoscopo.navigation.HoroscopeDestinations
@@ -62,6 +62,7 @@ fun HoroscopeApp(
     val signs = remember { repository.getSigns() }
     val navController = rememberNavController()
     var favouriteSignId by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedPeriods by remember { mutableStateOf<Map<String, HoroscopePeriod>>(emptyMap()) }
 
     NavHost(
         navController = navController,
@@ -72,11 +73,15 @@ fun HoroscopeApp(
             HoroscopeHomeScreen(
                 signs = signs,
                 favouriteSignId = favouriteSignId,
+                selectedPeriods = selectedPeriods,
                 onSignSelected = { sign ->
                     navController.navigate(HoroscopeDestinations.detailRoute(sign.id))
                 },
                 onFavouriteSelected = { sign ->
                     favouriteSignId = if (favouriteSignId == sign.id) null else sign.id
+                },
+                onPeriodSelected = { sign, period ->
+                    selectedPeriods = selectedPeriods + (sign.id to period)
                 },
             )
         }
@@ -100,10 +105,14 @@ fun HoroscopeApp(
             HoroscopeDetailScreen(
                 uiState = uiState.value,
                 favouriteSignId = favouriteSignId,
+                selectedPeriod = signId?.let { selectedPeriods[it] } ?: HoroscopePeriod.Day,
                 onNavigateBack = { navController.popBackStack() },
                 onRetry = detailViewModel::retry,
                 onFavouriteSelected = { sign ->
                     favouriteSignId = if (favouriteSignId == sign.id) null else sign.id
+                },
+                onPeriodSelected = { sign, period ->
+                    selectedPeriods = selectedPeriods + (sign.id to period)
                 },
             )
         }
@@ -115,8 +124,10 @@ fun HoroscopeApp(
 private fun HoroscopeHomeScreen(
     signs: List<ZodiacSign>,
     favouriteSignId: String?,
+    selectedPeriods: Map<String, HoroscopePeriod>,
     onSignSelected: (ZodiacSign) -> Unit,
     onFavouriteSelected: (ZodiacSign) -> Unit,
+    onPeriodSelected: (ZodiacSign, HoroscopePeriod) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -135,8 +146,10 @@ private fun HoroscopeHomeScreen(
         HoroscopeHomeContent(
             signs = signs,
             favouriteSignId = favouriteSignId,
+            selectedPeriods = selectedPeriods,
             onSignSelected = onSignSelected,
             onFavouriteSelected = onFavouriteSelected,
+            onPeriodSelected = onPeriodSelected,
             modifier = Modifier.padding(innerPadding),
         )
     }
@@ -146,8 +159,10 @@ private fun HoroscopeHomeScreen(
 private fun HoroscopeHomeContent(
     signs: List<ZodiacSign>,
     favouriteSignId: String?,
+    selectedPeriods: Map<String, HoroscopePeriod>,
     onSignSelected: (ZodiacSign) -> Unit,
     onFavouriteSelected: (ZodiacSign) -> Unit,
+    onPeriodSelected: (ZodiacSign, HoroscopePeriod) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -164,15 +179,12 @@ private fun HoroscopeHomeContent(
             ),
     ) {
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 156.dp),
+            columns = GridCells.Fixed(3),
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Header()
-            }
             items(
                 items = signs,
                 key = { it.id },
@@ -181,8 +193,10 @@ private fun HoroscopeHomeContent(
                     sign = sign,
                     selected = false,
                     isFavourite = sign.id == favouriteSignId,
+                    selectedPeriod = selectedPeriods[sign.id] ?: HoroscopePeriod.Day,
                     onClick = { onSignSelected(sign) },
                     onFavouriteClick = { onFavouriteSelected(sign) },
+                    onPeriodSelected = { period -> onPeriodSelected(sign, period) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -195,9 +209,11 @@ private fun HoroscopeHomeContent(
 private fun HoroscopeDetailScreen(
     uiState: HoroscopeDetailUiState,
     favouriteSignId: String?,
+    selectedPeriod: HoroscopePeriod,
     onNavigateBack: () -> Unit,
     onRetry: () -> Unit,
     onFavouriteSelected: (ZodiacSign) -> Unit,
+    onPeriodSelected: (ZodiacSign, HoroscopePeriod) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val screenTitle = when (uiState) {
@@ -273,7 +289,9 @@ private fun HoroscopeDetailScreen(
                         HoroscopeDetailCard(
                             sign = uiState.sign,
                             isFavourite = uiState.sign.id == favouriteSignId,
+                            selectedPeriod = selectedPeriod,
                             onFavouriteClick = { onFavouriteSelected(uiState.sign) },
+                            onPeriodSelected = { period -> onPeriodSelected(uiState.sign, period) },
                         )
                         Text(
                             text = "State lesson: this screen is rendering the Content state for ${uiState.sign.id}.",
@@ -284,27 +302,6 @@ private fun HoroscopeDetailScreen(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun Header(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text(
-            text = "Choose your zodiac sign",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-        )
-        Text(
-            text = "Tap a sign to open its detail screen with traits, lucky details, and today's reading.",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.72f),
-        )
     }
 }
 
