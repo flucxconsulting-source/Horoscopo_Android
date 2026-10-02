@@ -30,9 +30,9 @@ class HoroscopeAppTest {
             }
         }
 
-        composeRule.onNodeWithText("Choose your zodiac sign").assertIsDisplayed()
         composeRule.onNodeWithText("Aries").assertIsDisplayed()
         composeRule.onNodeWithText("Taurus").assertIsDisplayed()
+        composeRule.onNodeWithText("Pisces").assertIsDisplayed()
     }
 
     @Test
@@ -106,6 +106,27 @@ class HoroscopeAppTest {
         composeRule.onNodeWithContentDescription("Go back").performClick()
 
         composeRule.onNodeWithContentDescription("Remove Aries from favourites").assertIsDisplayed()
+    }
+
+    @Test
+    fun homeCard_periodToggleChangesVisibleReading() {
+        composeRule.setContent {
+            HoroscopoTheme {
+                HoroscopeApp(repository = FakeHoroscopeDataSource())
+            }
+        }
+
+        composeRule.onNodeWithContentDescription("Show Week horoscope for Aries").performClick()
+
+        composeRule
+            .onNodeWithText("This week favors your Fire nature", substring = true)
+            .assertIsDisplayed()
+
+        composeRule.onNodeWithContentDescription("Show Month horoscope for Aries").performClick()
+
+        composeRule
+            .onNodeWithText("This month, work with Mars", substring = true)
+            .assertIsDisplayed()
     }
 
     private class FakeHoroscopeDataSource : HoroscopeDataSource {
