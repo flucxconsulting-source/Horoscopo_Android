@@ -36,9 +36,11 @@ class HoroscopeRepositoryTest {
     @Test
     fun remoteRepository_replacesDailyReadingWhenApiReturnsText() = runTest {
         val repository = RemoteHoroscopeRepository(
-            api = FakeDailyHoroscopeApi(
-                horoscope = "Remote horoscope text.",
+            api = FakeDivineHoroscopeApi(
+                dailyHoroscope = "Remote horoscope text.",
             ),
+            apiKey = "api-key",
+            authToken = "auth-token",
         )
 
         val sign = repository.getSign("aries")
@@ -47,11 +49,46 @@ class HoroscopeRepositoryTest {
     }
 
     @Test
+    fun remoteRepository_replacesWeekAndMonthReadingsWhenApiReturnsText() = runTest {
+        val repository = RemoteHoroscopeRepository(
+            api = FakeDivineHoroscopeApi(
+                dailyHoroscope = "Remote daily text.",
+                weeklyHoroscope = "Remote weekly text.",
+                monthlyHoroscope = "Remote monthly text.",
+            ),
+            apiKey = "api-key",
+            authToken = "auth-token",
+        )
+
+        val sign = repository.getSign("aries")
+
+        assertEquals("Remote weekly text.", sign?.weeklyReading)
+        assertEquals("Remote monthly text.", sign?.monthlyReading)
+    }
+
+    @Test
+    fun remoteRepository_usesFallbackWhenCredentialsAreMissing() = runTest {
+        val repository = RemoteHoroscopeRepository(
+            api = FakeDivineHoroscopeApi(
+                dailyHoroscope = "Remote horoscope text.",
+            ),
+            apiKey = "",
+            authToken = "",
+        )
+
+        val sign = repository.getSign("aries")
+
+        assertEquals(HoroscopeRepository.getSign("aries")?.dailyReading, sign?.dailyReading)
+    }
+
+    @Test
     fun remoteRepository_throwsWhenApiFails() {
         val repository = RemoteHoroscopeRepository(
-            api = FakeDailyHoroscopeApi(
+            api = FakeDivineHoroscopeApi(
                 throwable = IllegalStateException("Network failed"),
             ),
+            apiKey = "api-key",
+            authToken = "auth-token",
         )
 
         assertThrows(IllegalStateException::class.java) {

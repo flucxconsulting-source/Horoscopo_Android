@@ -11,4 +11,6 @@ data class ZodiacSign(
     val luckyNumber: Int,
     val summary: String,
     val dailyReading: String,
+    val weeklyReading: String? = null,
+    val monthlyReading: String? = null,
 )

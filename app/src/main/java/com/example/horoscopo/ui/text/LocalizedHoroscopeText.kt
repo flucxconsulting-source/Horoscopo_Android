@@ -64,12 +64,12 @@ fun localizedPeriodTitle(period: HoroscopePeriod): String = when (period) {
 @Composable
 fun localizedReadingFor(sign: ZodiacSign, period: HoroscopePeriod): String = when (period) {
     HoroscopePeriod.Day -> sign.dailyReading
-    HoroscopePeriod.Week -> stringResource(
+    HoroscopePeriod.Week -> sign.weeklyReading ?: stringResource(
         R.string.period_week_reading,
         localizedElementName(sign.element).lowercase(),
         sign.summary,
     )
-    HoroscopePeriod.Month -> stringResource(
+    HoroscopePeriod.Month -> sign.monthlyReading ?: stringResource(
         R.string.period_month_reading,
         localizedPlanetName(sign.rulingPlanet),
         localizedColorName(sign.luckyColor).lowercase(),

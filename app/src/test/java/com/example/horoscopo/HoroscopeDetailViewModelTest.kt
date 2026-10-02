@@ -24,10 +24,12 @@ class HoroscopeDetailViewModelTest {
     @Test
     fun detailViewModel_canRetryAfterNetworkFailure() = runTest {
         val repository = RemoteHoroscopeRepository(
-            api = FakeDailyHoroscopeApi(
-                horoscopes = mutableListOf(null, "Recovered horoscope text."),
+            api = FakeDivineHoroscopeApi(
+                dailyHoroscopes = mutableListOf(null, "Recovered horoscope text."),
                 throwable = IllegalStateException("Network failed"),
             ),
+            apiKey = "api-key",
+            authToken = "auth-token",
         )
         val viewModel = HoroscopeDetailViewModel("aries", repository)
 

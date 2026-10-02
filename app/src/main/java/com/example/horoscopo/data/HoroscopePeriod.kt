@@ -11,6 +11,6 @@ enum class HoroscopePeriod(
 
 fun ZodiacSign.readingFor(period: HoroscopePeriod): String = when (period) {
     HoroscopePeriod.Day -> dailyReading
-    HoroscopePeriod.Week -> "This week favors your ${element.lowercase()} nature. ${summary}"
-    HoroscopePeriod.Month -> "This month, work with ${rulingPlanet}'s influence and keep ${luckyColor.lowercase()} close as a reminder to move with intention."
+    HoroscopePeriod.Week -> weeklyReading ?: "This week favors your ${element.lowercase()} nature. ${summary}"
+    HoroscopePeriod.Month -> monthlyReading ?: "This month, work with ${rulingPlanet}'s influence and keep ${luckyColor.lowercase()} close as a reminder to move with intention."
 }

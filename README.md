@@ -12,7 +12,7 @@ The app currently runs fully offline and teaches the first production-oriented p
 - Navigation Compose route from the zodiac list to a detail screen.
 - Detail UI state for loading, content, and error cases.
 - Detail ViewModel that exposes screen state with `StateFlow`.
-- Retrofit remote data source for daily horoscope text.
+- Retrofit remote data source for DivineAPI day, week, and month horoscope text.
 - Retry action when the daily horoscope network call fails.
 - Reusable Compose components for list and detail UI.
 - Unit tests for data, state, and ViewModel logic.
@@ -30,8 +30,8 @@ app/src/main/java/com/example/horoscopo/
 │   ├── HoroscopeRepository.kt
 │   ├── ZodiacSign.kt
 │   └── remote/
-│       ├── DailyHoroscopeApi.kt
-│       ├── DailyHoroscopeResponse.kt
+│       ├── DivineHoroscopeApi.kt
+│       ├── DivineHoroscopeResponse.kt
 │       └── RemoteHoroscopeRepository.kt
 ├── navigation/
 │   └── HoroscopeDestinations.kt
@@ -84,11 +84,20 @@ This practices the full path from model to data to UI to test.
 
 ## Remote data
 
-`RemoteHoroscopeRepository` uses Retrofit to request the daily horoscope from:
+`RemoteHoroscopeRepository` uses Retrofit to request day, week, and month horoscope forecasts from DivineAPI:
 
-`https://horoscope-app-api.vercel.app/api/v1/get-horoscope/daily`
+- `https://astroapi-5.divineapi.com/api/v5/daily-horoscope`
+- `https://astroapi-5.divineapi.com/api/v5/weekly-horoscope`
+- `https://astroapi-5.divineapi.com/api/v5/monthly-horoscope`
 
-The app keeps zodiac metadata locally and replaces only the daily reading with the remote text. If the network request fails, the detail screen shows an error state with a retry action.
+The app keeps zodiac metadata locally and replaces the day, week, and month readings with remote text when credentials are configured. If credentials are missing, the app keeps using local fallback readings so the project still builds and runs.
+
+Add credentials to your user-level Gradle properties file, not to the repository:
+
+```properties
+DIVINE_API_KEY=your-api-key
+DIVINE_AUTH_TOKEN=your-auth-token
+```
 
 ## Next recommended step
 

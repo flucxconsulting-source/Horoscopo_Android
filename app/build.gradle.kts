@@ -9,6 +9,9 @@ android {
         version = release(37)
     }
 
+    val divineApiKey = providers.gradleProperty("DIVINE_API_KEY").orElse("").get()
+    val divineAuthToken = providers.gradleProperty("DIVINE_AUTH_TOKEN").orElse("").get()
+
     defaultConfig {
         applicationId = "com.example.horoscopo"
         minSdk = 30
@@ -17,6 +20,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "DIVINE_API_KEY", "\"$divineApiKey\"")
+        buildConfigField("String", "DIVINE_AUTH_TOKEN", "\"$divineAuthToken\"")
     }
 
     buildTypes {
@@ -37,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
