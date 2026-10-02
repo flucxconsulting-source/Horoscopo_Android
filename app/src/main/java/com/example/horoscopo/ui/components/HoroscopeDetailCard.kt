@@ -5,8 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.horoscopo.data.HoroscopePeriod
@@ -53,7 +54,9 @@ fun HoroscopeDetailCard(
         ),
     ) {
         Column(
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Row(
@@ -61,7 +64,18 @@ fun HoroscopeDetailCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top,
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = sign.symbol,
+                    fontSize = 42.sp,
+                    lineHeight = 42.sp,
+                )
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 12.dp, end = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.Start,
+                ) {
                     Text(
                         text = sign.name,
                         style = MaterialTheme.typography.headlineSmall,
@@ -72,11 +86,6 @@ fun HoroscopeDetailCard(
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
-                Text(
-                    text = sign.symbol,
-                    fontSize = 42.sp,
-                    lineHeight = 42.sp,
-                )
                 IconButton(
                     onClick = onFavouriteClick,
                     modifier = Modifier.size(44.dp),
@@ -119,16 +128,62 @@ fun HoroscopeDetailCard(
                 )
             }
 
-            FlowRow(
+            Spacer(modifier = Modifier.weight(1f))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                AssistChip(onClick = {}, label = { Text("Element: ${sign.element}") })
-                AssistChip(onClick = {}, label = { Text("Planet: ${sign.rulingPlanet}") })
-                AssistChip(onClick = {}, label = { Text("Color: ${sign.luckyColor}") })
-                AssistChip(onClick = {}, label = { Text("Number: ${sign.luckyNumber}") })
+                DetailInfoBox(
+                    label = "Element",
+                    value = sign.element,
+                    modifier = Modifier.weight(1f),
+                )
+                DetailInfoBox(
+                    label = "Planet",
+                    value = sign.rulingPlanet,
+                    modifier = Modifier.weight(1f),
+                )
+                DetailInfoBox(
+                    label = "Color",
+                    value = sign.luckyColor,
+                    modifier = Modifier.weight(1f),
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun DetailInfoBox(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant,
+                shape = RoundedCornerShape(8.dp),
+            )
+            .padding(horizontal = 8.dp, vertical = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.72f),
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -282,7 +280,6 @@ private fun HoroscopeDetailScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
@@ -292,6 +289,7 @@ private fun HoroscopeDetailScreen(
                             selectedPeriod = selectedPeriod,
                             onFavouriteClick = { onFavouriteSelected(uiState.sign) },
                             onPeriodSelected = { period -> onPeriodSelected(uiState.sign, period) },
+                            modifier = Modifier.weight(1f),
                         )
                         Text(
                             text = "State lesson: this screen is rendering the Content state for ${uiState.sign.id}.",
