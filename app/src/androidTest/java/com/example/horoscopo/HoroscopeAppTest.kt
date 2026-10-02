@@ -92,6 +92,26 @@ class HoroscopeAppTest {
     }
 
     @Test
+    fun homeFilter_canShowOnlyFavouriteSign() {
+        composeRule.setContent {
+            HoroscopoTheme {
+                HoroscopeApp(repository = FakeHoroscopeDataSource())
+            }
+        }
+
+        composeRule.onNodeWithContentDescription("Mark Aries as favourite").performClick()
+        composeRule.onNodeWithContentDescription("Open horoscope filters").performClick()
+        composeRule.onNodeWithText("Favourite").performClick()
+        composeRule.onNodeWithText("Done").performClick()
+
+        composeRule.onNodeWithText("Aries").assertIsDisplayed()
+        composeRule
+            .onAllNodesWithText("Taurus")
+            .fetchSemanticsNodes()
+            .let { nodes -> assert(nodes.isEmpty()) }
+    }
+
+    @Test
     fun detailFavouriteButton_togglesAndSyncsWithHomeCard() {
         composeRule.setContent {
             HoroscopoTheme {
