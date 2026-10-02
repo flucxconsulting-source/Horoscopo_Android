@@ -1,16 +1,12 @@
 package com.example.horoscopo.ui.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -24,27 +20,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.horoscopo.data.HoroscopePeriod
 import com.example.horoscopo.data.ZodiacSign
-import com.example.horoscopo.data.readingFor
 
 @Composable
 fun ZodiacSignCard(
     sign: ZodiacSign,
     selected: Boolean,
     isFavourite: Boolean,
-    selectedPeriod: HoroscopePeriod,
     onClick: () -> Unit,
     onFavouriteClick: () -> Unit,
-    onPeriodSelected: (HoroscopePeriod) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colors = if (selected) {
@@ -58,7 +47,6 @@ fun ZodiacSignCard(
 
     ElevatedCard(
         modifier = modifier
-            .heightIn(min = 118.dp)
             .clickable(role = Role.Button, onClick = onClick),
         colors = colors,
     ) {
@@ -66,7 +54,7 @@ fun ZodiacSignCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -117,71 +105,10 @@ fun ZodiacSignCard(
                 }
             }
             Text(
-                text = sign.readingFor(selectedPeriod),
-                style = MaterialTheme.typography.bodySmall,
+                text = sign.element,
+                style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.secondary,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
             )
-            PeriodToggle(
-                selectedPeriod = selectedPeriod,
-                onPeriodSelected = onPeriodSelected,
-                signName = sign.name,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PeriodToggle(
-    selectedPeriod: HoroscopePeriod,
-    onPeriodSelected: (HoroscopePeriod) -> Unit,
-    signName: String,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        HoroscopePeriod.entries.forEach { period ->
-            val selected = period == selectedPeriod
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(6.dp))
-                    .border(
-                        width = 1.dp,
-                        color = if (selected) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.outlineVariant
-                        },
-                        shape = RoundedCornerShape(6.dp),
-                    )
-                    .clickable(
-                        role = Role.Button,
-                        onClickLabel = "Show ${period.label.lowercase()} horoscope for $signName",
-                    ) {
-                        onPeriodSelected(period)
-                    }
-                    .semantics {
-                        contentDescription = "Show ${period.label} horoscope for $signName"
-                    }
-                    .padding(vertical = 4.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = period.label,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-                    color = if (selected) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                    maxLines = 1,
-                )
-            }
         }
     }
 }
